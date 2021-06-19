@@ -99,6 +99,58 @@ def ResultsPage(resultslist):  #displays the results page
     #sort the list to provide relevant answers
     resultslist.sort(key=LISTKEY)
 
+    #make a new window
+    results = tk.Tk()
+    results.wm_title("Results")
+
+    #make a label with the message
+    label = tk.Label(results, text="Amount of displayed results", font=("Helvetica", 10))
+    label.pack(side="top", fill="x", pady=5, padx=5)
+
+    #add a scale to change how many results are shown
+    resultsscale = tk.Scale(results, from_=5, to=20, orient="horizontal")
+    resultsscale.pack()
+
+    #add a display widget
+    resultsdisplay = tk.Text(results, height=resultsscale.get(), width=50)
+    resultsdisplay.pack()
+
+    #Update the results
+    UpdateResults(resultsdisplay, resultslist, resultsscale.get())
+
+    #button to update the results page
+    updatebutton = tk.Button(results, text="update results", command=lambda: UpdateResults(resultsdisplay, resultslist, resultsscale.get()))
+    updatebutton.pack()
+
+    #mainloop it
+    results.mainloop()
+
+def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results page
+
+    #delete all characters in the results page to wipe the canvas
+    resultsdisplay.delete("1.0", "end")
+
+    #start a string for the new results
+    newresults = ""
+
+    for i in range(0, amount-1):  #for iteration in the amount of results that should be displayed
+
+        #see if it works
+        try:
+
+            #add the next shortest result to the results list
+            newresults += (resultslist[i][0] + "\n")
+
+        #if there arent enough results, break the loop
+        except IndexError:
+            break
+
+    #change the width/height to be correct
+    resultsdisplay["width"] = len(max(newresults.split("\n"), key = len)) + 5
+    resultsdisplay["height"] = amount
+
+    #insert the new results
+    resultsdisplay.insert(tk.END, newresults)
 
 #run the program
 Main()
