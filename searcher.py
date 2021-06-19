@@ -51,7 +51,10 @@ def Main():  #main
     #mainloops
     root.mainloop()
 
-def Search(folder, target, fuzziness): #takes 27 secs
+def Search(folder, target, fuzziness): #searches for the files
+
+    #starts a timer
+    starttime = time.time()
 
     #starts a results list
     resultslist = []
@@ -87,6 +90,9 @@ def Search(folder, target, fuzziness): #takes 27 secs
 
                 #add it to the result list
                 resultslist.append([current_path, dirname])
+
+    #gives the length of the search time
+    print(str(time.time()-starttime) + " secs to search")
 
     #display the results page
     ResultsPage(resultslist)
