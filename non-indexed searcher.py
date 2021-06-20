@@ -139,6 +139,20 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
     #start a string for the new results
     newresults = ""
 
+    if resultslist == []: #if the results are empty
+
+        #change it to say nothing was found
+        newresults = "nothing was found"
+
+        # change the width/height to be correct
+        resultsdisplay["width"] = len(max(newresults.split("\n"), key=len)) + 5
+        resultsdisplay["height"] = amount
+
+        # insert the new results
+        resultsdisplay.insert(tk.END, newresults)
+        return
+
+
     for i in range(0, amount-1):  #for iteration in the amount of results that should be displayed
 
         #see if it works
