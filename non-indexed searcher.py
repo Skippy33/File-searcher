@@ -29,6 +29,8 @@ def Main():  #main
     #makes box to input target file
     filelabel = tk.Label(root, text="target file name", pady=10)
     filelabel.pack()
+
+    #makes box to put target file in
     filebox = tk.Entry(root, width=50, borderwidth=2)
     filebox.pack()
 
