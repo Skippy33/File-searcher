@@ -71,7 +71,7 @@ def Search(folder, target, fuzziness): #searches for the files
 
             filename = os.path.splitext(filename)[0]
 
-            if fuzz.ratio(target, filename) >= 100 - fuzziness:  #if the filename is close enough to the target
+            if fuzz.ratio(target, filename) >= 100 - fuzziness or target.lower() in filename.lower():  #if the filename is close enough to the target
 
                 #set the current path
                 current_path = os.path.normpath(os.path.join(root, filename))
