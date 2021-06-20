@@ -37,8 +37,14 @@ def Main():  #main
     #makes box to input the directory to search in
     inlabel = tk.Label(root, text="folder to search in", pady=10)
     inlabel.pack()
-    inbox = tk.Entry(root, width=50, borderwidth=2, text="inbox")
+    inbox = tk.Entry(root, width=50, borderwidth=2)
     inbox.pack()
+
+    #folders to filter out
+    excludelabel = tk.Label(root, text="folders to exclude (A, B)", pady=10)
+    excludelabel.pack()
+    excludebox = tk.Entry(root, width=50, borderwidth=2)
+    excludebox.pack()
 
     #makes scale to select how fuzzy the search will be
     fuzzylabel = tk.Label(root, text="level of fuzziness", pady=5)
@@ -47,13 +53,13 @@ def Main():  #main
     fuzzyscale.pack()
 
     #button to submit the input
-    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get()))
+    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get(), excludebox.get()))
     submitbutton.pack()
 
     #mainloops
     root.mainloop()
 
-def Search(folder, target, fuzziness): #searches for the files
+def Search(folder, target, fuzziness, exclusions): #searches for the files
 
     #starts a timer
     starttime = time.time()
@@ -61,13 +67,36 @@ def Search(folder, target, fuzziness): #searches for the files
     #starts a results list
     resultslist = []
 
+    if exclusions != "":  #if the exclusions list is not empty
+
+        #see if the exclusions can be split
+        try:
+
+            #try to split it
+            exclusions = exclusions.split(", ")
+
+        # if anything goes wrong
+        except BaseException:
+
+            #make a popup
+            Popup("improper formatting of exclusions list (should be A, B, C...)")
+            return
+
+    else:
+        exclusions = [exclusions]
+
     if not os.path.isdir(folder):  #if the folder to look in is not a thing
 
         #make a popup telling them
         Popup("invalid folder to search in")
         return
 
-    for root, dirs, files in os.walk(folder):  #make lists of all directories and files
+    for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
+
+        #removes directories if they're on the exclusion list
+        for directory in dirs:
+            if directory in exclusions:
+                dirs.remove(directory)
 
         for filename in files:  #for every file in the list of files
 
@@ -168,7 +197,7 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
             break
 
     #change the width/height to be correct
-    resultsdisplay["width"] = len(max(newresults.split("\n"), key = len)) + 5
+    resultsdisplay["width"] = len(max(newresults.split("\n"), key=len)) + 5
     resultsdisplay["height"] = amount
 
     #insert the new results
@@ -178,3 +207,5 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
 Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
+
+#implement folders to be excluded and filters by extension type
