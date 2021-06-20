@@ -29,6 +29,8 @@ def Main():  #main
     #makes box to input target file
     filelabel = tk.Label(root, text="target file name", pady=10)
     filelabel.pack()
+
+    #makes box to put target file in
     filebox = tk.Entry(root, width=50, borderwidth=2)
     filebox.pack()
 
@@ -138,6 +140,20 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
 
     #start a string for the new results
     newresults = ""
+
+    if resultslist == []: #if the results are empty
+
+        #change it to say nothing was found
+        newresults = "nothing was found"
+
+        # change the width/height to be correct
+        resultsdisplay["width"] = len(max(newresults.split("\n"), key=len)) + 5
+        resultsdisplay["height"] = amount
+
+        # insert the new results
+        resultsdisplay.insert(tk.END, newresults)
+        return
+
 
     for i in range(0, amount-1):  #for iteration in the amount of results that should be displayed
 
