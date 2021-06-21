@@ -125,12 +125,6 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
 
     for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
 
-        #removes directories if they're on the exclusion list
-        for directory in dirs:  #for every directory in the "dirs" list
-            if directory in exclusions:  #if it is on trhe exclusion list
-                #BANISH IT
-                dirs.remove(directory)
-
         for filename in files:  #for every file in the list of files
 
             #set the file extension
@@ -162,6 +156,12 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
                     resultslist.append([current_path, filename, fileextension])
 
         for dirname in dirs:  #for every directory in the list of directories
+
+            if os.path.join(root, dirname) in exclusions:  #if it is on trhe exclusion list
+
+                #BANISH IT
+                dirs.remove(dirname)
+                continue
 
             if noextensions:  #if there arent any extensions to filter by
 
@@ -263,4 +263,3 @@ Main()
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 
 #implement a toggle filter for extended searching, ie. if you want results from "sna" to return "snake" or "snakes (not not really)
-#implement a way to filter out C:\Windows, not just all folders named "windows"
