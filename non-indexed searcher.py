@@ -46,6 +46,12 @@ def Main():  #main
     excludebox = tk.Entry(root, width=50, borderwidth=2)
     excludebox.pack()
 
+    #extensions to filter for
+    extensionslabel = tk.Label(root, text="extensions to filter for (.JPG, .PNG)", pady=10)
+    extensionslabel.pack()
+    extensionsbox = tk.Entry(root, width=50, borderwidth=2)
+    extensionsbox.pack()
+
     #makes scale to select how fuzzy the search will be
     fuzzylabel = tk.Label(root, text="level of fuzziness", pady=5)
     fuzzylabel.pack()
@@ -53,16 +59,18 @@ def Main():  #main
     fuzzyscale.pack()
 
     #button to submit the input
-    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get(), excludebox.get()))
+    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get(), excludebox.get(), extensionsbox.get()))
     submitbutton.pack()
 
     #mainloops
     root.mainloop()
 
-def Search(folder, target, fuzziness, exclusions): #searches for the files
+def Search(folder, target, fuzziness, exclusions, extensions): #searches for the files
 
     #starts a timer
     starttime = time.time()
+
+    noextensions = False
 
     #starts a results list
     resultslist = []
@@ -82,8 +90,29 @@ def Search(folder, target, fuzziness, exclusions): #searches for the files
             Popup("improper formatting of exclusions list (should be A, B, C...)")
             return
 
-    else:
+    else:  #otherwise
         exclusions = [exclusions]
+
+    if extensions != "":  #if the exclusions list is not empty
+
+        #see if the exclusions can be split
+        try:
+
+            #try to split it
+            extensions = extensions.split(", ")
+
+        # if anything goes wrong
+        except BaseException:
+
+            #make a popup
+            Popup("improper formatting of extensions list (should be .JPG, .PNG, .HEIC...)")
+            return
+
+    else:  #otherwise
+        if extensions == "":
+            noextensions = True
+        else:
+            extensions = [extensions]
 
     if not os.path.isdir(folder):  #if the folder to look in is not a thing
 
@@ -94,33 +123,54 @@ def Search(folder, target, fuzziness, exclusions): #searches for the files
     for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
 
         #removes directories if they're on the exclusion list
-        for directory in dirs:
-            if directory in exclusions:
+        for directory in dirs:  #for every directory in the "dirs" list
+            if directory in exclusions:  #if it is on trhe exclusion list
+                #BANISH IT
                 dirs.remove(directory)
 
         for filename in files:  #for every file in the list of files
 
+            fileextension = os.path.splitext(filename)[1]
+
+            # correct the directory name
             filename = os.path.splitext(filename)[0]
 
             if fuzz.ratio(target, filename) >= 100 - fuzziness or target.lower() in filename.lower():  #if the filename is close enough to the target
 
-                #set the current path
-                current_path = os.path.normpath(os.path.join(root, filename))
+                #deals with the extension sorting
+                if noextensions == False and fileextension not in extensions:  #if there are extensions to filter by and the file's extension is not on the list
+                    continue
 
-                #add it to the results list
-                resultslist.append([current_path, filename])
+                elif noextensions == False and fileextension in extensions:  #if there are extensions to filter by and the file's extension is on the list
+
+                    # set the current path
+                    current_path = os.path.normpath(os.path.join(root, filename))
+
+                    # add it to the results list
+                    resultslist.append([current_path, filename, fileextension])
+
+                elif noextensions == True:  #if there are no extensions to filter by
+
+                    #set the current path
+                    current_path = os.path.normpath(os.path.join(root, filename))
+
+                    #add it to the results list
+                    resultslist.append([current_path, filename, fileextension])
 
         for dirname in dirs:  #for every directory in the list of directories
 
-            dirname = os.path.splitext(dirname)[0]
+            if noextensions:  #if there arent any extensions to filter by
 
-            if fuzz.ratio(target, dirname) >= 100 - fuzziness:  #if the filename is close enough to the target
+                #correct the directory name
+                dirname = os.path.splitext(dirname)[0]
 
-                #set the current path
-                current_path = os.path.normpath(os.path.join(root, dirname))
+                if fuzz.ratio(target, dirname) >= 100 - fuzziness:  #if the filename is close enough to the target
 
-                #add it to the result list
-                resultslist.append([current_path, dirname])
+                    #set the current path
+                    current_path = os.path.normpath(os.path.join(root, dirname))
+
+                    #add it to the result list
+                    resultslist.append([current_path, dirname])
 
     #gives the length of the search time
     print(str(time.time()-starttime) + " secs to search")
@@ -184,13 +234,13 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
         return
 
 
-    for i in range(0, amount-1):  #for iteration in the amount of results that should be displayed
+    for i in range(0, amount):  #for iteration in the amount of results that should be displayed
 
         #see if it works
         try:
 
             #add the next shortest result to the results list
-            newresults += (resultslist[i][0] + "\n")
+            newresults += (resultslist[i][0] + resultslist[i][2] + "\n")
 
         #if there arent enough results, break the loop
         except IndexError:
@@ -208,4 +258,4 @@ Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 
-#implement folders to be excluded and filters by extension type
+#implement filters by extension type
