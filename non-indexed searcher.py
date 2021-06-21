@@ -41,7 +41,7 @@ def Main():  #main
     inbox.pack()
 
     #folders to filter out
-    excludelabel = tk.Label(root, text="folders to exclude (A, B)", pady=10)
+    excludelabel = tk.Label(root, text="folder paths to exclude (example\A, example\B)", pady=10)
     excludelabel.pack()
     excludebox = tk.Entry(root, width=50, borderwidth=2)
     excludebox.pack()
@@ -74,6 +74,9 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
 
     #starts a results list
     resultslist = []
+
+    #lowercase all extension filters
+    extensions = extensions.lower()
 
     if exclusions != "":  #if the exclusions list is not empty
 
@@ -122,15 +125,10 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
 
     for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
 
-        #removes directories if they're on the exclusion list
-        for directory in dirs:  #for every directory in the "dirs" list
-            if directory in exclusions:  #if it is on trhe exclusion list
-                #BANISH IT
-                dirs.remove(directory)
-
         for filename in files:  #for every file in the list of files
 
-            fileextension = os.path.splitext(filename)[1]
+            #set the file extension
+            fileextension = os.path.splitext(filename)[1].lower()
 
             # correct the directory name
             filename = os.path.splitext(filename)[0]
@@ -158,6 +156,12 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
                     resultslist.append([current_path, filename, fileextension])
 
         for dirname in dirs:  #for every directory in the list of directories
+
+            if os.path.join(root, dirname) in exclusions:  #if it is on trhe exclusion list
+
+                #BANISH IT
+                dirs.remove(dirname)
+                continue
 
             if noextensions:  #if there arent any extensions to filter by
 
@@ -258,4 +262,4 @@ Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 
-#implement filters by extension type
+#implement a toggle filter for extended searching, ie. if you want results from "sna" to return "snake" or "snakes (not not really)
