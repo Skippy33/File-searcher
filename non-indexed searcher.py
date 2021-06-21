@@ -75,6 +75,9 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
     #starts a results list
     resultslist = []
 
+    #lowercase all extension filters
+    extensions = extensions.lower()
+
     if exclusions != "":  #if the exclusions list is not empty
 
         #see if the exclusions can be split
@@ -130,7 +133,8 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
 
         for filename in files:  #for every file in the list of files
 
-            fileextension = os.path.splitext(filename)[1]
+            #set the file extension
+            fileextension = os.path.splitext(filename)[1].lower()
 
             # correct the directory name
             filename = os.path.splitext(filename)[0]
@@ -258,4 +262,5 @@ Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 
-#implement filters by extension type
+#implement a toggle filter for extended searching, ie. if you want results from "sna" to return "snake" or "snakes (not not really)
+#implement a way to filter out C:\Windows, not just all folders named "windows"
