@@ -41,7 +41,7 @@ def Main():  #main
     inbox.pack()
 
     #folders to filter out
-    excludelabel = tk.Label(root, text="folders to exclude (A, B)", pady=10)
+    excludelabel = tk.Label(root, text="folder paths to exclude (example\A, example\B)", pady=10)
     excludelabel.pack()
     excludebox = tk.Entry(root, width=50, borderwidth=2)
     excludebox.pack()
