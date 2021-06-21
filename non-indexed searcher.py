@@ -46,6 +46,12 @@ def Main():  #main
     excludebox = tk.Entry(root, width=50, borderwidth=2)
     excludebox.pack()
 
+    #extensions to filter for
+    extensionslabel = tk.Label(root, text="extensions to filter for (.JPG, .PNG)", pady=10)
+    extensionslabel.pack()
+    extensionslabel = tk.Entry(root, width=50, borderwidth=2)
+    extensionslabel.pack()
+
     #makes scale to select how fuzzy the search will be
     fuzzylabel = tk.Label(root, text="level of fuzziness", pady=5)
     fuzzylabel.pack()
@@ -208,4 +214,4 @@ Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 
-#implement folders to be excluded and filters by extension type
+#implement filters by extension type
