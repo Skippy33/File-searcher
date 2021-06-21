@@ -21,6 +21,18 @@ def Popup(message):  # makes popup to tell user what is correct formatting, stol
     #mainloop it
     popup.mainloop()
 
+def ToggleSearch(button):  #toggles the extended search button
+
+    if button["text"] == "ON":  #if it says "on"
+
+        #make it say "off"
+        button["text"] = "OFF"
+
+    else:  #if it says "off"
+
+        #change it to "on"
+        button["text"] = "ON"
+
 def Main():  #main
     #starts root
     root = tk.Tk()
@@ -52,6 +64,12 @@ def Main():  #main
     extensionsbox = tk.Entry(root, width=50, borderwidth=2)
     extensionsbox.pack()
 
+    #make a button to toggle extended searching
+    extendedsearchlabel = tk.Label(root, text='extended search (return "snake" for "sna")', pady=10)
+    extendedsearchlabel.pack()
+    extendedsearchbutton = tk.Button(root, width=15, borderwidth=2, text="ON", command=lambda: ToggleSearch(extendedsearchbutton))
+    extendedsearchbutton.pack()
+
     #makes scale to select how fuzzy the search will be
     fuzzylabel = tk.Label(root, text="level of fuzziness", pady=5)
     fuzzylabel.pack()
@@ -59,13 +77,13 @@ def Main():  #main
     fuzzyscale.pack()
 
     #button to submit the input
-    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get(), excludebox.get(), extensionsbox.get()))
+    submitbutton = tk.Button(root, text="find file", command=lambda: Search(inbox.get(), filebox.get(), fuzzyscale.get(), excludebox.get(), extensionsbox.get(), extendedsearchbutton["text"]))
     submitbutton.pack()
 
     #mainloops
     root.mainloop()
 
-def Search(folder, target, fuzziness, exclusions, extensions): #searches for the files
+def Search(folder, target, fuzziness, exclusions, extensions, extendedsearch): #searches for the files
 
     #starts a timer
     starttime = time.time()
@@ -77,6 +95,17 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
 
     #lowercase all extension filters
     extensions = extensions.lower()
+
+    #set an extendedsearch var to tell later programs if it should do an extended search
+    if extendedsearch == "ON":  #if it says "on"
+
+        #set the extended search to True
+        extendedsearch = True
+
+    else:  #if it says "off"
+
+        #set the extended search to False
+        extendedsearch = False
 
     if exclusions != "":  #if the exclusions list is not empty
 
@@ -112,9 +141,14 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
             return
 
     else:  #otherwise
-        if extensions == "":
+        if extensions == "":  #if there are no extensions
+
+            #set the noextensions to True
             noextensions = True
-        else:
+
+        else: #if there is only 1 extension
+
+            #add it to the list
             extensions = [extensions]
 
     if not os.path.isdir(folder):  #if the folder to look in is not a thing
@@ -123,6 +157,7 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
         Popup("invalid folder to search in")
         return
 
+    print(extendedsearch)
     for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
 
         for filename in files:  #for every file in the list of files
@@ -133,7 +168,7 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
             # correct the directory name
             filename = os.path.splitext(filename)[0]
 
-            if fuzz.ratio(target, filename) >= 100 - fuzziness or target.lower() in filename.lower():  #if the filename is close enough to the target
+            if fuzz.ratio(target, filename) >= 100 - fuzziness or target.lower() in filename.lower() and extendedsearch:  #if the filename is close enough to the target or the extendedsearch is toggled and it fits for the extended search
 
                 #deals with the extension sorting
                 if noextensions == False and fileextension not in extensions:  #if there are extensions to filter by and the file's extension is not on the list
@@ -163,7 +198,7 @@ def Search(folder, target, fuzziness, exclusions, extensions): #searches for the
                 dirs.remove(dirname)
                 continue
 
-            if noextensions:  #if there arent any extensions to filter by
+            if noextensions or target.lower() in dirname.lower() and extendedsearch and noextensions:  #if there arent any extensions to filter by
 
                 #correct the directory name
                 dirname = os.path.splitext(dirname)[0]
@@ -261,5 +296,3 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
 Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
-
-#implement a toggle filter for extended searching, ie. if you want results from "sna" to return "snake" or "snakes (not not really)
