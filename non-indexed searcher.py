@@ -34,8 +34,11 @@ def ToggleSearch(button):  #toggles the extended search button
         button["text"] = "ON"
 
 def Main():  #main
+
     #starts root
     root = tk.Tk()
+
+    #change the title of the window
     root.wm_title("File Searcher")
 
     #makes box to input target file
@@ -88,6 +91,7 @@ def Search(folder, target, fuzziness, exclusions, extensions, extendedsearch): #
     #starts a timer
     starttime = time.time()
 
+    #start the noextensions variable
     noextensions = False
 
     #starts a results list
@@ -157,7 +161,6 @@ def Search(folder, target, fuzziness, exclusions, extensions, extendedsearch): #
         Popup("invalid folder to search in")
         return
 
-    print(extendedsearch)
     for root, dirs, files in os.walk(folder, topdown=True):  #make lists of all directories and files
 
         for filename in files:  #for every file in the list of files
@@ -296,3 +299,5 @@ def UpdateResults(resultsdisplay, resultslist, amount):  #updates the results pa
 Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
+# 30 second search for C drive (fast SSD), 8 minute search for A drive
+#sort the eventual indexed version by length of file name, allows for fast binary searching
