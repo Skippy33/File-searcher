@@ -300,4 +300,5 @@ Main()
 
 #testfolder location: C:\Users\Sebastien\PycharmProjects\File searcher\testfolder
 # 30 second search for C drive (fast SSD), 8 minute search for A drive
-#sort the eventual indexed version by length of file name, allows for fast binary searching
+#sort the eventual indexed version by length of file name, allows for fast binary searching. Then to find fuzzy matching go thorugh everything near its length.
+#watch amazon series for graph theory
